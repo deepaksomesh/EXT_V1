@@ -1,0 +1,14 @@
+[
+  {
+    "id": "doc1",
+    "text": "Machine learning is a field of artificial intelligence that focuses on learning from data."
+  },
+  {
+    "id": "doc2",
+    "text": "Retrieval-augmented generation combines neural retrieval with text generation models."
+  },
+  {
+    "id": "doc3",
+    "text": "FAISS is a library for efficient similarity search and clustering of dense vectors."
+  }
+]

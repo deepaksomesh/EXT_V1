@@ -1,0 +1,5 @@
+{"query": "When did world war 1 happen?", "action_index": 0, "cost": 64.0, "latency": 1.9339022636413574, "quality_proxy": 4.0, "timestamp": "2026-01-16T14:07:14.675162"}
+{"query": "What happens when you are not sure when to use RAG in your system?", "action_index": 0, "cost": 68.5, "latency": 1.4471373558044434, "quality_proxy": 4.0, "timestamp": "2026-01-16T14:08:47.109844"}
+{"query": "What are the limitations of using FAISS?", "action_index": 0, "cost": 65.0, "latency": 1.3890140056610107, "quality_proxy": 4.0, "timestamp": "2026-01-16T14:09:38.414643"}
+{"query": "what the hell?", "action_index": 0, "cost": 62.5, "latency": 1.9311163425445557, "quality_proxy": 4.0, "timestamp": "2026-01-17T11:35:56.081700"}
+{"query": "Should you consider to quit?", "action_index": 0, "cost": 63.5, "latency": 1.4760682582855225, "quality_proxy": 4.0, "timestamp": "2026-01-17T11:36:38.833865"}

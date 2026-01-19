@@ -1,40 +1,55 @@
+import json
+import random
+from monitoring.metric import Timer
 from retrieval.retriever import Retriever
-from models.generator import Generator
 from models.model_registry import ModelRegistry
-from monitoring.metric import CostModel, Timer
-from retrieval_policy import AdaptiveRetrievalPolicy
-from policy.model_policy import AdaptiveModelPolicy
+from policy.joint_policy import JointDecisionPolicy
 
-queries = [
-    "What is machine learning?",
-    "What is retrieval augmented generation?",
-    "Explain FAISS indexing",
-    "Summarize the causes of World War I"
-]
+# ------------------------
+# Load QA dataset
+# ------------------------
+with open("data/processed/qa_pairs.json", "r", encoding="utf-8") as f:
+    qa_pairs = json.load(f)
 
+sampled_qa = random.sample(qa_pairs, 5)
+
+# ------------------------
+# Components
+# ------------------------
 retriever = Retriever(
-    "data/index.faiss", "data/documents.json", k=10
+    index_path="data/index.faiss",
+    doc_path="data/processed/documents.json",
+    k=5
 )
-# generator = Generator()
-models = ModelRegistry()
-policy = AdaptiveRetrievalPolicy()
-model_policy = AdaptiveModelPolicy()
 
-# cost_model = CostModel()
-for q in queries:
+models = ModelRegistry()
+policy = JointDecisionPolicy()
+
+# ------------------------
+# Evaluation loop
+# ------------------------
+for qa in sampled_qa:
+    query = qa["question"]
+    gold = qa["answer"]
+
+    action = policy.select_action(query)
+    k = action["k"]
+    model_id = action["model"]
+
     with Timer() as timer:
-        k = policy.select_k(q)
-        ctx = retriever.retrieve(q) if k > 0 else []
-        model_id = model_policy.select_model(q, k)
+        retriever.k = k
+        contexts = retriever.retrieve(query)
         generator = models.get(model_id)
-        ans, tokens = generator.generate(q, ctx)
-    
+        answer, tokens = generator.generate(query, contexts)
+
     cost = tokens["total_tokens"] * models.cost_factor(model_id)
 
-    print("=" * 70)
-    print("Q:", q)
-    print("k:", k, "| model:", model_id)
-    print("Latency:", round(timer.elapsed, 2))
-    print("Tokens:", tokens)
-    print("Normalized cost:", cost)
-    print("Answer preview:", ans)
+    print("=" * 80)
+    print("Q:", query)
+    print("Gold answer:", gold)
+    print("Action:", action)
+    print("Latency (s):", round(timer.elapsed, 2))
+    print("Cost:", round(cost, 2))
+    print("Retrieved docs:", len(contexts))
+    print("Generated answer preview:")
+    print(answer[:300])

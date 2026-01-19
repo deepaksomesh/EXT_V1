@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sentence_transformers import SentenceTransformer
+import random
 
 class JointDecisionPolicy:
     """
@@ -26,14 +27,20 @@ class JointDecisionPolicy:
         emb = self.embedder.encode(query)
         return np.concatenate([[tokens], emb[:10]])  # cheap + stable
 
-    def select_action(self, query: str):
-        x = self.featurize(query).reshape(1, -1)
+    def select_action(self, query, epsilon: float = 0.2):
+        """
+        ε-greedy action selection for exploration.
+        """
 
-        if not self.trained:
-            return self.ACTIONS[0]  # safe default
+        # Exploration
+        if random.random() < epsilon:
+            return random.choice(self.ACTIONS)
 
-        idx = self.model.predict(x)[0]
-        return self.ACTIONS[idx]
+        # Exploitation
+        features = self.featurize(query).reshape(1, -1)
+        action_idx = self.model.predict(features)[0]
+        return self.ACTIONS[action_idx]
+
 
     def train(self, X, y):
         self.model.fit(X, y)

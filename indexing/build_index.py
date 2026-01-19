@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 INDEX_PATH = "data/index.faiss"
-DOC_PATH = "data/documents.json"
+DOC_PATH = "data/processed/documents.json"
 
 def main():
     with open(DOC_PATH, 'r', encoding='utf-8') as f:

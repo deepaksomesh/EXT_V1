@@ -5,7 +5,7 @@ import random
 from retrieval.retriever import Retriever
 from models.model_registry import ModelRegistry
 from monitoring.metric import Timer
-from policy.joint_policy import JointDecisionPolicy
+from policy.linucb_policy import LinUCBPolicy
 from policy.data_logger import DataLogger
 from data.qa_loader import QALoader
 
@@ -17,11 +17,13 @@ app = FastAPI()
 retriever = Retriever(
     index_path="data/index.faiss",
     doc_path="data/processed/documents.json",
+    graph_path="data/knowledge_graph.gml",
     k=5
 )
 
 models = ModelRegistry()
-policy = JointDecisionPolicy()
+# UPGRADE: Switched to LinUCB Policy
+policy = LinUCBPolicy(alpha=1.0)
 logger = DataLogger()
 qa_loader = QALoader()
 
@@ -31,6 +33,7 @@ qa_loader = QALoader()
 class QueryRequest(BaseModel):
     query: str | None = None
     use_dataset: bool = False
+    use_graph: bool = True  # New flag for GraphRAG
 
 
 @app.post("/query")
@@ -65,7 +68,9 @@ def query_rag(req: QueryRequest):
     # ------------------------
     with Timer() as timer:
         retriever.k = k
-        contexts = retriever.retrieve(query)
+        # Hybrid retrieval (Dense + Graph)
+        contexts = retriever.retrieve(query, use_graph=req.use_graph)
+
 
         generator = models.get(model_id)
         answer, tokens = generator.generate(query, contexts)

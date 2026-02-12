@@ -2,7 +2,8 @@ torch
 sentence-transformers
 faiss-cpu
 transformers
+scikit-learn
 fastapi
 uvicorn
-numpy
-pydantic
+tabulate
+sentencepiece

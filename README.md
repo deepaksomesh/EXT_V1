@@ -179,10 +179,6 @@ Set `use_dataset: true` to sample from the QA dataset (useful for training/evalu
 git clone https://github.com/your-username/adaptive-graphrag.git
 cd adaptive-graphrag
 
-python -m venv .venv
-.venv\Scripts\activate      # Windows
-# source .venv/bin/activate  # Linux/Mac
-
 pip install -r requirements.txt
 ```
 
